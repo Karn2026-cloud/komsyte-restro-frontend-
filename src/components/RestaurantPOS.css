@@ -1,0 +1,177 @@
+:root {
+    --pos-bg: #f1f5f9;
+    --panel-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --primary-accent: #3b82f6;
+    --secondary-accent: #10b981;
+    --danger-accent: #ef4444;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-radius: 12px;
+}
+
+.pos-container {
+    display: grid;
+    grid-template-columns: 1fr 400px; /* Main content and right sidebar */
+    height: calc(100vh - var(--header-height) - 50px); /* Adjust based on your layout's header/padding */
+    gap: 25px;
+    overflow: hidden;
+}
+
+/* --- Panels --- */
+.pos-panel {
+    background-color: var(--panel-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.pos-panel-header {
+    padding: 20px;
+    margin: 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pos-panel-content {
+    padding: 25px;
+    overflow-y: auto;
+}
+
+/* --- Left Panel: Tables & Menu --- */
+.pos-main-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding: 0 25px;
+    padding-top: 25px;
+}
+
+.pos-main-controls button {
+    flex-grow: 1;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    background-color: #f8fafc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pos-main-controls button:hover {
+    background-color: #f1f5f9;
+}
+.pos-main-controls button.active {
+    background-color: var(--primary-accent);
+    color: white;
+    border-color: var(--primary-accent);
+}
+
+.tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 20px;
+}
+
+.table-box {
+    padding: 25px 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+.table-box.vacant { background-color: #f8fafc; }
+.table-box.occupied { border-color: var(--danger-accent); color: var(--danger-accent); background-color: #fef2f2; }
+.table-box:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+.table-box.selected { background-color: var(--primary-accent); color: white; border-color: var(--primary-accent); }
+
+
+.menu-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+}
+.menu-item-card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+.menu-item-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+.menu-item-card img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+}
+.menu-item-info {
+    padding: 12px;
+}
+.menu-item-info .name { font-weight: 600; color: var(--text-primary); }
+.menu-item-info .price { font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px;}
+
+/* --- Right Panel: Current Order --- */
+.order-header {
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 0 25px 20px 25px;
+    color: var(--text-secondary);
+}
+.order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.order-items-table th, .order-items-table td {
+    padding: 14px 0;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+.order-item-qty { text-align: center; }
+.qty-controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.qty-btn { background: #f1f5f9; border: 1px solid var(--border-color); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; line-height: 1; }
+
+.order-footer {
+    margin-top: auto;
+    padding: 25px;
+    background-color: #f8fafc;
+    border-top: 1px solid var(--border-color);
+}
+.order-total { display: flex; justify-content: space-between; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; }
+.order-actions button { width: 100%; padding: 16px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 10px; }
+.kot-btn { background: var(--primary-accent); color: white; }
+.bill-btn { background: var(--secondary-accent); color: white; }
+.order-actions button:disabled { background: #9ca3af; cursor: not-allowed; }
+
+/* --- Responsive Design --- */
+@media (max-width: 1200px) {
+    .pos-container { grid-template-columns: 1fr 350px; }
+}
+
+@media (max-width: 992px) {
+    .pos-container {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    .pos-panel {
+        height: auto;
+        min-height: 500px;
+    }
+}
+@media (max-width: 576px) {
+    .pos-main-controls { flex-direction: column; }
+    .tables-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+    .menu-items-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+}

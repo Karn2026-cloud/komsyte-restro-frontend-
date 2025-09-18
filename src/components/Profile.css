@@ -1,0 +1,144 @@
+/* =================================================================== */
+/* General Page Layout & Title                                       */
+/* =================================================================== */
+.profile-page-container {
+    padding: 20px;
+    background-color: #f9fafb; /* A very light grey background */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827; /* Darker text for titles */
+    margin-bottom: 25px;
+    border-bottom: 2px solid var(--primary-color, #4a90e2);
+    padding-bottom: 10px;
+}
+
+/* =================================================================== */
+/* Add Employee Form Styles                                          */
+/* =================================================================== */
+.profile-form {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 30px;
+}
+
+.profile-form h3 {
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #374151;
+}
+
+/* --- NEW: Grid layout for the form --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.profile-form input,
+.profile-form select {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.profile-form input:focus,
+.profile-form select:focus {
+    outline: none;
+    border-color: var(--primary-color, #4a90e2);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.profile-form button[type="submit"] {
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: var(--primary-color, #4a90e2);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.profile-form button[type="submit"]:hover {
+    background-color: var(--primary-hover, #357abd);
+}
+
+/* =================================================================== */
+/* Employee List & Table Styles                                      */
+/* =================================================================== */
+.employee-list-container {
+    margin-top: 20px;
+}
+
+.employee-list-container h3 {
+    font-size: 1.5rem;
+    color: #374151;
+    margin-bottom: 20px;
+}
+
+.employee-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    overflow: hidden; /* Ensures border-radius is respected by children */
+}
+
+.employee-table th,
+.employee-table td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.employee-table thead {
+    background-color: #f3f4f6;
+}
+
+.employee-table th {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4b5563;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.employee-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.employee-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+/* --- Action Buttons (e.g., Delete) --- */
+.delete-btn {
+    padding: 8px 15px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background-color: var(--danger-color, #dc3545);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}

@@ -1,0 +1,163 @@
+/* Main container for the entire page */
+.table-management-page {
+    padding: 20px;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f9fafb; /* Light background for the page */
+}
+
+/* Header section for the page title */
+.page-header {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.page-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #333;
+}
+
+/* --- QR Code Section Styling --- */
+.shop-qr-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e7e7e7;
+}
+
+.shop-qr-container h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    color: #0056b3;
+}
+
+.shop-qr-container p {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.main-qr-code .download-qr-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.main-qr-code .download-qr-btn:hover {
+    background-color: #0056b3;
+}
+
+/* --- Form and Table List Section Styling --- */
+.add-table-form-container,
+.table-list-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e7e7e7;
+}
+
+.add-table-form-container h3,
+.table-list-container h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.add-table-form-container form {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.add-table-form-container input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 0.95rem;
+}
+
+/* Grid for displaying the manual tables */
+.tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Individual card for each manual table */
+.table-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.table-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.table-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.table-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #343a40;
+}
+
+.table-capacity {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Shared button styles */
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+}
+
+button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+.error-message {
+    color: #dc3545;
+    margin-top: 15px;
+}
