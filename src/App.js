@@ -3,35 +3,59 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-// Import your components
-import Login from './components/Login';
-import Signup from './components/Signup';
-import Restaurant from './components/Restaurant';
-import CustomerMenu from './components/customer_view/CustomerMenu';
+// --- Corrected Import Paths ---
+// Use '../' to go up one level from the nested src folder
+import Login from '../components/Login.js';
+import SignUp from '../components/SignUp.js';
+import RestaurantLayout from '../components/restaurant.js';
+import CustomerMenu from '../components/customer_view/CustomerMenu.js'; 
 
-// You might also have a landing page or homepage component
-import HomePage from './components/HomePage';
+// This is a helper component to protect routes that require a user to be logged in
+const PrivateRoute = ({ children }) => {
+    // Check if a login token exists in the browser's local storage
+    const token = localStorage.getItem('token');
+    
+    // If a token exists, show the requested page. If not, redirect to the login page.
+    return token ? children : <Navigate to="/login" />;
+};
 
 function App() {
-    return (
-        <Router>
-            <Routes>
-                {/* Public Routes accessible without authentication */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                {/* The new, public route for customers scanning the QR code */}
-                <Route path="/menu" element={<CustomerMenu />} />
+  return (
+    <Router>
+      <Routes>
+        {/* Public route for customers to view the menu after scanning a QR code */}
+        <Route path="/menu" element={<CustomerMenu />} />
 
-                {/* Authenticated/Private Route for the Restaurant Dashboard */}
-                {/* All routes inside this are only accessible to logged-in users */}
-                <Route path="/restaurant/*" element={<Restaurant />} />
+        {/* Route for the Login page */}
+        <Route path="/login" element={<Login />} />
 
-                {/* Redirect any unmatched routes to the login page as a fallback */}
-                <Route path="*" element={<Navigate to="/login" />} />
-            </Routes>
-        </Router>
-    );
+        {/* Route for the Signup page */}
+        <Route path="/signup" element={<SignUp />} />
+        
+        {/* This is the main route for your entire restaurant application */}
+        {/* It is wrapped in PrivateRoute to ensure only logged-in users can access it */}
+        <Route 
+          path="/restaurant/*" 
+          element={
+            <PrivateRoute>
+              <RestaurantLayout />
+            </PrivateRoute>
+          } 
+        />
+        
+        {/* Default route logic */}
+        {/* If a user is logged in, redirect them to the POS, otherwise to the login page. */}
+        <Route 
+          path="/" 
+          element={
+            localStorage.getItem('token') 
+              ? <Navigate to="/restaurant/pos" replace /> 
+              : <Navigate to="/login" replace />
+          } 
+        />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
