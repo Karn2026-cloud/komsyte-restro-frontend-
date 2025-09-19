@@ -17,11 +17,12 @@ export default function CustomerMenu() {
     const [orderSuccess, setOrderSuccess] = useState(null);
 
     const query = useQuery();
-    // We now get 'shopId' from the URL, not 'tableId'
-    const shopId = query.get('shopId');
+    // We now get 'tableId' from the URL
+    const tableId = query.get('tableId');
+    const shopId = query.get('shopId'); // Retain shopId for public menu fetch
 
     useEffect(() => {
-        if (!shopId) {
+        if (!tableId && !shopId) {
             setError("Invalid QR Code. Please scan a valid code for the restaurant.");
             setIsLoading(false);
             return;
@@ -32,135 +33,145 @@ export default function CustomerMenu() {
                 // The public menu endpoint now needs the shopId to know which menu to serve
                 const response = await API.get(`/api/public/menu?shopId=${shopId}`);
                 
-                // Assuming the backend now returns an object with shopName and menuItems
-                setMenuItems(Array.isArray(response.data.menuItems) ? response.data.menuItems : []);
-                setShopName(response.data.shopName || 'Our Restaurant');
+                // Assuming the backend now returns an object with shop info and menu items
+                setMenuItems(response.data.menu.filter(item => item.isAvailable));
+                setShopName(response.data.shop.shopName);
+                setError('');
             } catch (err) {
-                setError('Could not load the menu. Please try again later.');
+                const errorMsg = err.response?.data?.error || 'Failed to fetch menu items.';
+                setError(errorMsg);
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchMenuAndShopInfo();
-
-    }, [shopId]); // The effect now depends on shopId
-
-    const addItemToCart = (item) => {
-        setCart(prevCart => {
-            const existingItem = prevCart.find(cartItem => cartItem._id === item._id);
-            if (existingItem) {
-                return prevCart.map(cartItem =>
-                    cartItem._id === item._id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem
-                );
-            }
-            return [...prevCart, { ...item, quantity: 1 }];
-        });
-    };
-
-    const handleQuantityChange = (itemId, change) => {
-        setCart(prevCart =>
-            prevCart.map(item =>
-                item._id === itemId ? { ...item, quantity: Math.max(0, item.quantity + change) } : item
-            ).filter(item => item.quantity > 0)
-        );
-    };
-
-    const handleSubmitOrder = async () => {
-        if (cart.length === 0) return;
-        setIsLoading(true);
-        setError('');
-
-        // Local storage now uses the shopId to track an ongoing order for this restaurant
-        const existingOrderId = localStorage.getItem(`orderId_${shopId}`);
-
-        const orderPayload = {
-            items: cart.map(item => ({ productId: item._id, quantity: item.quantity, name: item.name, price: item.price })),
-            // We send the shopId; the backend will create a temporary table
-            shopId: shopId,
-            orderType: 'Dine-In-QR', // Using a specific type for these orders
-            ...(existingOrderId && { existingOrderId })
-        };
-
-        try {
-            const { data } = await API.post('/api/public/orders', orderPayload);
-
-            // Save the order ID against the shopId in local storage
-            localStorage.setItem(`orderId_${shopId}`, data.orderId);
-
-            setOrderSuccess({ orderId: data.orderId, kotNumber: data.kotNumber });
-            setCart([]); // Clear cart after successful order
-
-        } catch (err) {
-            setError(err.response?.data?.error || 'Failed to place order.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const groupedMenu = useMemo(() => {
-        return menuItems.reduce((acc, item) => {
-            const category = item.category || 'Other';
-            (acc[category] = acc[category] || []).push(item);
-            return acc;
-        }, {});
-    }, [menuItems]);
+    }, [tableId, shopId]);
 
     const cartTotal = useMemo(() => {
         return cart.reduce((total, item) => total + item.price * item.quantity, 0);
     }, [cart]);
 
+    const handleAddToCart = useCallback((item) => {
+        setCart(prevCart => {
+            const existingItem = prevCart.find(cartItem => cartItem._id === item._id);
+            if (existingItem) {
+                return prevCart.map(cartItem =>
+                    cartItem._id === item._id
+                        ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                        : cartItem
+                );
+            } else {
+                return [...prevCart, { ...item, quantity: 1 }];
+            }
+        });
+    }, []);
 
-    if (!shopId) {
-        return <div className="customer-menu-container error-page"><h1>Error</h1><p>{error}</p></div>;
+    const handleQuantityChange = useCallback((itemId, delta) => {
+        setCart(prevCart => {
+            const updatedCart = prevCart.map(item =>
+                item._id === itemId ? { ...item, quantity: item.quantity + delta } : item
+            ).filter(item => item.quantity > 0);
+            return updatedCart;
+        });
+    }, []);
+
+    const handleSubmitOrder = async () => {
+        if (cart.length === 0) {
+            setError('Your cart is empty.');
+            return;
+        }
+
+        const existingOrderId = localStorage.getItem(`orderId_${shopId}`);
+
+        const orderData = {
+            restaurantId: shopId,
+            tableId: tableId, // Use tableId from the URL
+            items: cart.map(item => ({
+                menuItem: item._id,
+                quantity: item.quantity,
+                price: item.price,
+                notes: '' // Placeholder for now
+            })),
+            totalPrice: cartTotal,
+        };
+
+        setIsLoading(true);
+        try {
+            let response;
+            if (existingOrderId) {
+                // Update an existing order
+                response = await API.put(`/api/public/order/${existingOrderId}`, {
+                    ...orderData,
+                    action: 'add'
+                });
+                setOrderSuccess('Order updated successfully!');
+            } else {
+                // Create a new order
+                response = await API.post('/api/public/order', orderData);
+                // Store the new order ID in local storage for future updates
+                localStorage.setItem(`orderId_${shopId}`, response.data._id);
+                setOrderSuccess('Order placed successfully!');
+            }
+            setCart([]);
+        } catch (err) {
+            console.error(err);
+            const errorMsg = err.response?.data?.error || 'Failed to place order.';
+            setError(errorMsg);
+            setOrderSuccess(null);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    // Filter the menu to show only available items
+    const availableMenuItems = useMemo(() => {
+        return menuItems.filter(item => item.isAvailable);
+    }, [menuItems]);
+
+    if (isLoading) {
+        return <div className="loading">Loading...</div>;
     }
 
-    if (orderSuccess) {
-        return (
-            <div className="customer-menu-container success-page">
-                <h2>Order Placed Successfully!</h2>
-                <p>Your Kitchen Order Ticket (KOT) is #{orderSuccess.kotNumber}.</p>
-                <p>Your Order ID is <strong>{orderSuccess.orderId}</strong>.</p>
-                <p>You can keep this browser tab open to add more items to your order before paying.</p>
-                <button onClick={() => setOrderSuccess(null)}>+ Order More</button>
-            </div>
-        );
+    if (error) {
+        return <div className="error-message">{error}</div>;
     }
 
     return (
-        <div className="customer-menu-container">
-            <header className="menu-header">
-                {/* Display the restaurant's name */}
-                <h1>Welcome to {shopName}</h1>
-                <p>Select your items below and place your order.</p>
+        <div className="customer-menu-page">
+            <header className="customer-menu-header">
+                <h2>{shopName || 'Menu'}</h2>
             </header>
-
-            {isLoading && <p>Loading menu...</p>}
-            {error && <p className="error-message">{error}</p>}
-
-            <div className="menu-content">
-                <div className="menu-items-section">
-                    {Object.entries(groupedMenu).map(([category, items]) => (
-                        <section key={category} className="menu-category">
-                            <h2>{category}</h2>
-                            <div className="items-grid">
-                                {items.map(item => (
-                                    <div key={item._id} className="menu-item-card">
-                                        <img src={item.imageUrl ? `http://localhost:5000${item.imageUrl}` : 'https://via.placeholder.com/150'} alt={item.name} />
-                                        <h3>{item.name}</h3>
-                                        <div className="card-footer">
-                                            <span className="price">₹{item.price}</span>
-                                            <button onClick={() => addItemToCart(item)}>Add</button>
-                                        </div>
+            <div className="customer-menu-main">
+                <section className="menu-items-section">
+                    <h3>Available Items</h3>
+                    <div className="menu-grid">
+                        {availableMenuItems.length > 0 ? (
+                            availableMenuItems.map(item => (
+                                <div key={item._id} className="menu-item-card">
+                                    <img 
+                                        src={item.attributes?.image || 'https://via.placeholder.com/150'} 
+                                        alt={item.name} 
+                                        className="menu-item-img" 
+                                    />
+                                    <div className="menu-item-details">
+                                        <h4>{item.name}</h4>
+                                        <p className="menu-item-price">₹{item.price}</p>
+                                        <p className="menu-item-desc">{item.attributes?.description}</p>
+                                        <button className="add-to-cart-btn" onClick={() => handleAddToCart(item)}>
+                                            Add to Cart
+                                        </button>
                                     </div>
-                                ))}
-                            </div>
-                        </section>
-                    ))}
-                </div>
-
-                <aside className="cart-sidebar">
-                    <h2>Your Order</h2>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No menu items available at the moment.</p>
+                        )}
+                    </div>
+                </section>
+                <aside className="customer-cart-section">
+                    <h3>Your Order</h3>
+                    {orderSuccess && <p className="success-message">{orderSuccess}</p>}
                     {cart.length === 0 ? (
                         <p>Your cart is empty.</p>
                     ) : (
@@ -182,7 +193,7 @@ export default function CustomerMenu() {
                                 <strong>Total: ₹{cartTotal.toFixed(2)}</strong>
                             </div>
                             <button className="place-order-btn" onClick={handleSubmitOrder} disabled={isLoading}>
-                                {/* Check local storage using shopId */}
+                                {/* Check local storage using shopId */ }
                                 {localStorage.getItem(`orderId_${shopId}`) ? 'Add to Existing Order' : 'Place Order'}
                             </button>
                         </>
