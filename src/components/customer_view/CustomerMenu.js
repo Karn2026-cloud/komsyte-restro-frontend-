@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import API from '../../api'; // Make sure this path to your API utility is correct
 import './Customermenu.css'; // Ensure you have this CSS file
