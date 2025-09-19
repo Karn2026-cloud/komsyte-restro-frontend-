@@ -1,11 +1,8 @@
 import React, { useRef } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 
-export default function QRCodeGenerator({ table }) {
+export default function QRCodeGenerator({ table, qrCodeURL }) {
     const qrRef = useRef();
-
-    // The new URL points to your live Render domain, with a unique tableId.
-    const qrCodeURL = `https://komsyte-restro-frontend.onrender.com/menu?tableId=${table._id}`;
 
     const downloadQRCode = (e) => {
         e.preventDefault();
