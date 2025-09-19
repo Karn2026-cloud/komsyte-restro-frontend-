@@ -5,10 +5,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 // --- Corrected Import Paths ---
 // Use '../' to go up one level from the nested src folder
-import Login from '../components/Login';
-import SignUp from '../components/SignUp';
-import RestaurantLayout from '../components/restaurant';
-import CustomerMenu from '../components/customer_view/CustomerMenu'; 
+import Login from './components/Login';
+import SignUp from './components/SignUp';
+import RestaurantLayout from './components/restaurant';
+import CustomerMenu from './components/customer_view/CustomerMenu'; 
 
 // This is a helper component to protect routes that require a user to be logged in
 const PrivateRoute = ({ children }) => {
