@@ -1,17 +1,15 @@
+// src/components/tableManagement.js
 import React, { useState, useEffect, useCallback } from 'react';
 import API from '../api';
 import './Tablemanagement.css';
 import QRCodeGenerator from './QRCodeGenerator';
 
-// Pass the 'user' prop into this component from restaurant.js
 export default function TableManagement({ user }) {
     const [tables, setTables] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     
-    // --- NEW: State to control if the QR code is visible ---
     const [isQrVisible, setIsQrVisible] = useState(false);
-
     const [newTableName, setNewTableName] = useState('');
     const [newTableCapacity, setNewTableCapacity] = useState(4);
 
@@ -19,7 +17,6 @@ export default function TableManagement({ user }) {
         try {
             setIsLoading(true);
             const response = await API.get('/api/tables');
-            // Filter out the temporary tables so staff don't see them
             setTables(response.data.filter(t => !t.isTemporary));
         } catch (err) {
             setError('Failed to fetch tables.');
@@ -63,7 +60,6 @@ export default function TableManagement({ user }) {
         }
     }, [fetchTables]);
 
-    // --- NEW: Handler for showing/hiding QR code generator and passing the table prop ---
     const handleGenerateQr = (table) => {
         setTables(prevTables => prevTables.map(t =>
             t._id === table._id ? { ...t, showQr: !t.showQr } : t
@@ -79,9 +75,8 @@ export default function TableManagement({ user }) {
             <div className="qr-generator-section">
                 <h3>QR Code Generation</h3>
                 <p>Generate unique QR codes for each table to enable mobile ordering.</p>
-                {/* Simplified logic to show one QR code at a time or a selection */}
                 {tables.map(table => {
-                    // The URL now includes both the shop ID and the specific table ID
+                    // Update the QR code URL to correctly link to the public menu route
                     const qrCodeURL = `https://komsyte-restro-frontend.onrender.com/menu?shopId=${user.restaurantId._id}&tableId=${table._id}`;
                     return (
                         <div key={table._id} className="qr-gen-card">
@@ -102,7 +97,7 @@ export default function TableManagement({ user }) {
                     );
                 })}
             </div>
-
+            
             <div className="add-table-form-container">
                 <h3>Add a New Table</h3>
                 <form onSubmit={handleAddTable} className="add-table-form">
