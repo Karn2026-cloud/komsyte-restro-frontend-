@@ -65,8 +65,6 @@ export default function TableManagement({ user }) {
 
     // --- NEW: Handler for showing/hiding QR code generator and passing the table prop ---
     const handleGenerateQr = (table) => {
-        // This is a simplified approach, you might want to manage a separate state for each QR code
-        // For now, it will simply display a QR code for the table that was clicked
         setTables(prevTables => prevTables.map(t =>
             t._id === table._id ? { ...t, showQr: !t.showQr } : t
         ));
@@ -82,15 +80,26 @@ export default function TableManagement({ user }) {
                 <h3>QR Code Generation</h3>
                 <p>Generate unique QR codes for each table to enable mobile ordering.</p>
                 {/* Simplified logic to show one QR code at a time or a selection */}
-                {tables.map(table => (
-                    <div key={table._id} className="qr-gen-card">
-                        <span>{table.name}</span>
-                        <button onClick={() => handleGenerateQr(table)}>
-                            {table.showQr ? 'Hide QR Code' : 'Generate QR Code'}
-                        </button>
-                        {table.showQr && <QRCodeGenerator table={table} />}
-                    </div>
-                ))}
+                {tables.map(table => {
+                    const qrCodeURL = `https://komsyte-restro-frontend.onrender.com/menu?tableId=${table._id}`;
+                    return (
+                        <div key={table._id} className="qr-gen-card">
+                            <span>{table.name}</span>
+                            <button onClick={() => handleGenerateQr(table)}>
+                                {table.showQr ? 'Hide QR Code' : 'Generate QR Code'}
+                            </button>
+                            {table.showQr && (
+                                <>
+                                    <QRCodeGenerator table={table} qrCodeURL={qrCodeURL} />
+                                    <p style={{ marginTop: '15px' }}>Or share this link:</p>
+                                    <a href={qrCodeURL} target="_blank" rel="noopener noreferrer">
+                                        {qrCodeURL}
+                                    </a>
+                                </>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
 
             <div className="add-table-form-container">
