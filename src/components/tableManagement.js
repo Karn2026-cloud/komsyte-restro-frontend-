@@ -81,7 +81,8 @@ export default function TableManagement({ user }) {
                 <p>Generate unique QR codes for each table to enable mobile ordering.</p>
                 {/* Simplified logic to show one QR code at a time or a selection */}
                 {tables.map(table => {
-                    const qrCodeURL = `https://komsyte-restro-frontend.onrender.com/menu?tableId=${table._id}`;
+                    // The URL now includes both the shop ID and the specific table ID
+                    const qrCodeURL = `https://komsyte-restro-frontend.onrender.com/menu?shopId=${user.restaurantId._id}&tableId=${table._id}`;
                     return (
                         <div key={table._id} className="qr-gen-card">
                             <span>{table.name}</span>
