@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
-import "./style.css";
+import "./signup.css";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({ shopName: "", email: "", password: "" });
@@ -70,3 +70,4 @@ export default function SignUp() {
     </div>
   );
 }
+
