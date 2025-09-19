@@ -39,67 +39,63 @@ export default function TableManagement({ user }) {
             return;
         }
         try {
-            await API.post('/api/tables', { name: newTableName, capacity: newTableCapacity });
+            const newTable = {
+                name: newTableName,
+                capacity: newTableCapacity,
+                restaurant: user.restaurantId._id
+            };
+            await API.post('/api/tables', newTable);
             setNewTableName('');
             setNewTableCapacity(4);
-            fetchTables(); // Refresh the list
+            fetchTables();
             setError('');
         } catch (err) {
             setError(err.response?.data?.error || 'Failed to add table.');
         }
     };
 
-    const handleDeleteTable = async (tableId) => {
-        if (window.confirm('Are you sure you want to delete this table?')) {
-            try {
-                await API.delete(`/api/tables/${tableId}`);
-                fetchTables();
-            } catch (err) {
-                setError(err.response?.data?.error || 'Failed to delete table.');
-            }
+    const handleDeleteTable = useCallback(async (tableId) => {
+        try {
+            await API.delete(`/api/tables/${tableId}`);
+            fetchTables();
+        } catch (err) {
+            setError('Failed to delete table.');
         }
+    }, [fetchTables]);
+
+    // --- NEW: Handler for showing/hiding QR code generator and passing the table prop ---
+    const handleGenerateQr = (table) => {
+        // This is a simplified approach, you might want to manage a separate state for each QR code
+        // For now, it will simply display a QR code for the table that was clicked
+        setTables(prevTables => prevTables.map(t =>
+            t._id === table._id ? { ...t, showQr: !t.showQr } : t
+        ));
     };
 
-    if (isLoading) {
-        return <div>Loading...</div>
-    }
-
     return (
-        <div className="page-container table-management-page">
-            <div className="page-header">
-                <h2>QR Code & Table Management</h2>
-            </div>
-
-            {/* --- UPDATED: SINGLE SHOP QR CODE SECTION --- */}
-            <div className="shop-qr-container">
-                <h3>Your Restaurant's QR Code</h3>
-                <p>Generate a single QR code for customers to scan and order directly.</p>
-                
-                {/* --- NEW LOGIC: Show button or QR code based on state --- */}
-                {isQrVisible ? (
-                    <div className="main-qr-code">
-                        {/* Ensure the correct user object structure is passed */}
-                        {user && user.restaurantId ? (
-                            <>
-                                <QRCodeGenerator shop={user.restaurantId} />
-                                <button className="delete-btn" style={{marginTop: '15px'}} onClick={() => setIsQrVisible(false)}>
-                                    Delete QR Code
-                                </button>
-                            </>
-                        ) : (
-                            <p>Could not load shop data to generate QR code.</p>
-                        )}
+        <div className="table-management-container">
+            <header className="page-header">
+                <h2>Table Management</h2>
+            </header>
+            
+            <div className="qr-generator-section">
+                <h3>QR Code Generation</h3>
+                <p>Generate unique QR codes for each table to enable mobile ordering.</p>
+                {/* Simplified logic to show one QR code at a time or a selection */}
+                {tables.map(table => (
+                    <div key={table._id} className="qr-gen-card">
+                        <span>{table.name}</span>
+                        <button onClick={() => handleGenerateQr(table)}>
+                            {table.showQr ? 'Hide QR Code' : 'Generate QR Code'}
+                        </button>
+                        {table.showQr && <QRCodeGenerator table={table} />}
                     </div>
-                ) : (
-                    <button className="generate-qr-btn" onClick={() => setIsQrVisible(true)}>
-                        Generate QR Code
-                    </button>
-                )}
+                ))}
             </div>
 
             <div className="add-table-form-container">
-                <h3>Add a Manual Table (For Staff Use)</h3>
-                <form onSubmit={handleAddTable}>
+                <h3>Add a New Table</h3>
+                <form onSubmit={handleAddTable} className="add-table-form">
                     <input
                         type="text"
                         placeholder="Table Name (e.g., T1, Rooftop 5)"
