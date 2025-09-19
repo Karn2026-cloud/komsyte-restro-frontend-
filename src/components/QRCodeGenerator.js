@@ -1,21 +1,21 @@
 import React, { useRef } from 'react';
-import { QRCodeCanvas } from 'qrcode.react'; 
+import { QRCodeCanvas } from 'qrcode.react';
 
-export default function QRCodeGenerator({ shop }) {
+export default function QRCodeGenerator({ table }) {
     const qrRef = useRef();
 
-    // ✅ FIX: Change 'localhost:5000' to your live domain and port
-    // For example: 'https://your-restaurant-app.com/api/public/menu?shopId='
-    const qrCodeURL = `https://komsyte-restro-backend.onrender.com:5000/api/public/menu?shopId=${shop._id}`;
+    // The new URL points to a specific table, not just the shop.
+    // Replace 'localhost' with your IP for testing or your domain for production.
+    const qrCodeURL = `https://komsyte-restro-frontend.onrender.com/menu?shopId=${table._id}`;
 
     const downloadQRCode = (e) => {
         e.preventDefault();
-        const canvas = qrRef.current; 
+        const canvas = qrRef.current;
         if (canvas) {
             const image = canvas.toDataURL("image/png");
             const anchor = document.createElement("a");
             anchor.href = image;
-            anchor.download = `QR-Code-${shop.shopName}.png`;
+            anchor.download = `QR-Code-${table.name}.png`;
             document.body.appendChild(anchor);
             anchor.click();
             document.body.removeChild(anchor);
