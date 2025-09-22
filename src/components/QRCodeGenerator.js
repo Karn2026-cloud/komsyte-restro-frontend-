@@ -20,13 +20,15 @@ export default function QRCodeGenerator({ table, qrCodeURL }) {
 
     return (
         <div className="qr-code-wrapper">
-            <QRCodeCanvas
-                ref={qrRef}
-                value={qrCodeURL}
-                size={180}
-                level={"H"}
-                includeMargin={true}
-            />
+            <a href={qrCodeURL} target="_blank" rel="noopener noreferrer" className="qr-link">
+                <QRCodeCanvas
+                    ref={qrRef}
+                    value={qrCodeURL}
+                    size={180}
+                    level={"H"}
+                    includeMargin={true}
+                />
+            </a>
             <button className="download-qr-btn" onClick={downloadQRCode} style={{marginTop: '15px'}}>
                 Download QR Code
             </button>

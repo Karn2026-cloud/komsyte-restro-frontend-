@@ -17,7 +17,13 @@ export default function Reports() {
         setIsLoading(true);
         try {
             const { data } = await API.get('/api/reports/dashboard');
-            setReportData(data);
+            // Ensure data properties are valid and handle missing values
+            setReportData({
+                totalRevenue: data.totalRevenue || 0,
+                dailySales: Array.isArray(data.dailySales) ? data.dailySales : [],
+                topSellingItems: Array.isArray(data.topSellingItems) ? data.topSellingItems : [],
+                employeePerformance: Array.isArray(data.employeePerformance) ? data.employeePerformance : []
+            });
         } catch (err) {
             setError('Failed to fetch dashboard report. Please try again later.');
             console.error(err);
@@ -37,119 +43,97 @@ export default function Reports() {
     if (error) {
         return <div className="error-container">{error}</div>;
     }
-
-    // Destructure all necessary data from the API response
-    const { kpis, salesTrend, topItems, employeePerformance } = reportData || {};
-
-    // Prepare data for the sales trend chart
-    const chartData = {
-        labels: salesTrend?.labels || [],
-        datasets: [
-            {
-                label: 'Total Sales (₹)',
-                data: salesTrend?.data || [],
-                fill: false,
-                backgroundColor: 'rgb(75, 192, 192)',
-                borderColor: 'rgba(75, 192, 192, 0.8)',
-                tension: 0.1
-            }
-        ]
-    };
     
-    const chartOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-            },
-            title: {
-                display: true,
-                text: 'Sales Trend Overview'
-            }
-        }
+    // Prepare chart data and options
+    const salesChartData = {
+        labels: reportData?.dailySales.map(item => item._id),
+        datasets: [{
+            label: 'Total Daily Sales',
+            data: reportData?.dailySales.map(item => item.totalSales),
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
     };
+
+    const topItemsChartData = {
+        labels: reportData?.topSellingItems.map(item => item.name),
+        datasets: [{
+            label: 'Items Sold',
+            data: reportData?.topSellingItems.map(item => item.totalQuantity),
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    const employeePerformance = reportData?.employeePerformance || [];
 
     return (
-        <div className="report-page-container">
-            <h2 className="page-title">Restaurant Dashboard</h2>
+        <div className="reports-container">
+            <h2 className="section-title">Reports & Analytics</h2>
 
-            {/* --- Key Performance Indicator (KPI) Cards --- */}
-            <div className="report-section kpi-cards">
-                <div className="kpi-card">
+            {/* Overall Summary Section */}
+            <div className="reports-summary-cards">
+                <div className="summary-card">
                     <h4>Total Revenue</h4>
-                    <p>₹{kpis?.totalRevenue?.toFixed(2) || '0.00'}</p>
+                    <p className="summary-value">₹{reportData.totalRevenue?.toFixed(2) || '0.00'}</p>
                 </div>
-                <div className="kpi-card">
-                    <h4>Total Orders</h4>
-                    <p>{kpis?.totalOrders || 0}</p>
+                <div className="summary-card">
+                    <h4>Top Selling Item</h4>
+                    <p className="summary-value">
+                        {reportData.topSellingItems.length > 0 ? reportData.topSellingItems[0].name : 'N/A'}
+                    </p>
                 </div>
-                <div className="kpi-card">
-                    <h4>Average Order Value</h4>
-                    <p>₹{kpis?.averageOrderValue?.toFixed(2) || '0.00'}</p>
-                </div>
-                <div className="kpi-card">
-                    <h4>New Customers</h4>
-                    <p>{kpis?.newCustomers || 0}</p>
+                <div className="summary-card">
+                    <h4>Top Performer</h4>
+                    <p className="summary-value">
+                        {reportData.employeePerformance.length > 0 ? reportData.employeePerformance[0].workerName : 'N/A'}
+                    </p>
                 </div>
             </div>
 
-            {/* --- Sales Trend Chart --- */}
-            <div className="report-section sales-chart">
-                <h3>Sales Trend</h3>
-                <Line options={chartOptions} data={chartData} />
-            </div>
-
-            {/* --- Top Selling Items --- */}
-            <div className="report-section top-items">
-                <h3>Top Selling Items</h3>
-                <div className="report-table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Item Name</th>
-                                <th>Quantity Sold</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {topItems && topItems.length > 0 ? (
-                                topItems.map((item) => (
-                                    <tr key={item.name}>
-                                        <td>{item.name}</td>
-                                        <td>{item.totalQuantity}</td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="2" className="no-data-cell">No item data available.</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+            <div className="reports-content">
+                {/* Daily Sales Chart */}
+                <div className="chart-container">
+                    <h3>Daily Sales</h3>
+                    {reportData.dailySales.length > 0 ? (
+                        <Line data={salesChartData} />
+                    ) : (
+                        <p className="no-data-message">No daily sales data available.</p>
+                    )}
                 </div>
-            </div>
-            
-            {/* --- Employee Performance Table --- */}
-            <div className="report-section employee-performance">
-                <h3>Employee Performance</h3>
-                <div className="report-table-container">
-                    <table>
+
+                {/* Top Selling Items Chart */}
+                <div className="chart-container">
+                    <h3>Top Selling Items (by Quantity)</h3>
+                    {reportData.topSellingItems.length > 0 ? (
+                        <Line data={topItemsChartData} />
+                    ) : (
+                        <p className="no-data-message">No top selling items data available.</p>
+                    )}
+                </div>
+
+                {/* Employee Performance Table */}
+                <div className="table-container">
+                    <h3>Employee Performance</h3>
+                    <table className="employee-table">
                         <thead>
                             <tr>
                                 <th>Rank</th>
-                                <th>Employee Name</th>
+                                <th>Worker Name</th>
                                 <th>Bills Handled</th>
                                 <th>Total Sales (₹)</th>
                                 <th>Avg. Order Value (₹)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {employeePerformance && employeePerformance.length > 0 ? (
+                            {employeePerformance.length > 0 ? (
                                 employeePerformance.map((employee, index) => (
                                     <tr key={employee.workerId || index}>
                                         <td><span className={`rank-badge rank-${index + 1}`}>{index + 1}</span></td>
                                         <td>{employee.workerName}</td>
                                         <td>{employee.billsCount}</td>
-                                        <td>₹{employee.totalSales.toFixed(2)}</td>
+                                        <td>₹{employee.totalSales?.toFixed(2) || '0.00'}</td>
                                         <td>₹{employee.aov ? employee.aov.toFixed(2) : '0.00'}</td>
                                     </tr>
                                 ))

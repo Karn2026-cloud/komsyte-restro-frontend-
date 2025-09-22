@@ -17,7 +17,7 @@ export default function MenuManagement() {
             setIsLoading(true);
             const response = await API.get('/api/menu');
             // Ensure every item has a boolean isAvailable property
-            const items = response.data.map(item => ({...item, isAvailable: item.isAvailable !== false}));
+            const items = response.data.map(item => ({ ...item, isAvailable: item.isAvailable !== false }));
             setMenuItems(Array.isArray(items) ? items : []);
             setError('');
         } catch (err) {
@@ -35,167 +35,172 @@ export default function MenuManagement() {
     // --- Handler to quickly toggle item availability from the card ---
     const handleToggleAvailability = async (item) => {
         // Optimistically update the UI for a faster user experience
-        const updatedMenuItems = menuItems.map(mi => 
+        const updatedMenuItems = menuItems.map(mi =>
             mi._id === item._id ? { ...mi, isAvailable: !mi.isAvailable } : mi
         );
         setMenuItems(updatedMenuItems);
-
         try {
-            // Send the update to the backend. We only need to send the field that's changing.
-            await API.put(`/api/menu/${item._id}`, { isAvailable: !item.isAvailable });
+            // Send the update to the new, dedicated backend route
+            await API.put(`/api/menu/toggle-availability/${item._id}`, { isAvailable: !item.isAvailable });
         } catch (err) {
             setError('Failed to update status. Please try again.');
             // If the API call fails, revert the change in the UI by re-fetching
-            fetchMenu(); 
+            fetchMenu();
         }
     };
 
     const handleNewItemClick = () => {
-        setEditingItem({ name: '', price: '', category: '', attributes: { description: '' }, isAvailable: true });
-        setImageFile(null);
-    };
-
-    const handleEditClick = (item) => {
-        setEditingItem({ ...item });
-        setImageFile(null);
+        setEditingItem({ name: '', price: '', category: '', attributes: { description: '' } });
     };
 
     const handleDeleteClick = async (itemId) => {
-        if (window.confirm('Are you sure you want to delete this menu item?')) {
+        const confirmDelete = window.confirm("Are you sure you want to delete this menu item?");
+        if (confirmDelete) {
             try {
                 await API.delete(`/api/menu/${itemId}`);
-                fetchMenu();
+                setMenuItems(menuItems.filter(item => item._id !== itemId));
             } catch (err) {
-                const errorMsg = err.response?.data?.error || 'Failed to delete item.';
-                setError(errorMsg);
+                setError('Failed to delete item.');
+                console.error(err);
             }
         }
     };
 
-    const handleCancel = () => {
-        setEditingItem(null);
-    };
+    // --- Filter and memoize menu items for search performance ---
+    const filteredMenuItems = useMemo(() => {
+        if (!searchQuery) return menuItems;
+        return menuItems.filter(item =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [menuItems, searchQuery]);
 
     const handleFormChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        if (name === "description") {
-            setEditingItem(prev => ({ ...prev, attributes: { ...prev.attributes, description: value } }));
-        } else if (type === 'checkbox') {
-            setEditingItem(prev => ({ ...prev, [name]: checked }));
+        const { name, value } = e.target;
+        if (name.startsWith('attributes.')) {
+            const attrName = name.split('.')[1];
+            setEditingItem(prev => ({
+                ...prev,
+                attributes: { ...prev.attributes, [attrName]: value }
+            }));
         } else {
             setEditingItem(prev => ({ ...prev, [name]: value }));
         }
     };
-    
-    const handleFileChange = (e) => {
+
+    const handleImageChange = (e) => {
         setImageFile(e.target.files[0]);
     };
 
-    const handleSubmit = async (e) => {
+    const handleSaveItem = async (e) => {
         e.preventDefault();
         const formData = new FormData();
         formData.append('name', editingItem.name);
         formData.append('price', editingItem.price);
         formData.append('category', editingItem.category);
-        formData.append('description', editingItem.attributes?.description || '');
-        formData.append('isAvailable', editingItem.isAvailable); // Send availability status
+        if (editingItem.attributes.description) {
+            formData.append('attributes.description', editingItem.attributes.description);
+        }
         if (imageFile) {
             formData.append('image', imageFile);
         }
-        
+
         try {
-            const headers = { 'Content-Type': 'multipart/form-data' };
             if (editingItem._id) {
-                await API.put(`/api/menu/${editingItem._id}`, formData, { headers });
+                await API.put(`/api/menu/${editingItem._id}`, formData);
             } else {
-                await API.post('/api/menu', formData, { headers });
+                await API.post('/api/menu', formData);
             }
             setEditingItem(null);
             setImageFile(null);
             fetchMenu();
         } catch (err) {
-            const errorMsg = err.response?.data?.error || 'Failed to save menu item.';
-            setError(errorMsg);
-            console.error(err);
+            setError('Failed to save item.');
         }
     };
 
-    // --- Filter menu items based on search query ---
-    const filteredMenuItems = useMemo(() => {
-        return menuItems.filter(item =>
-            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.category.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }, [searchQuery, menuItems]);
+    const handleEditClick = (item) => {
+        setEditingItem(item);
+    };
 
+    if (isLoading) {
+        return <div className="loading-container">Loading Menu...</div>;
+    }
 
-    if (isLoading) return <div>Loading menu...</div>;
+    if (error) {
+        return <div className="error-container">{error}</div>;
+    }
 
     return (
         <div className="menu-management-container">
-            <div className="menu-header">
-                <h2>Menu Management</h2>
-                <div className="menu-controls">
-                    {/* --- Search Bar --- */}
-                    <input 
+            <h2 className="section-title">Menu Management</h2>
+            <div className="controls-bar">
+                <button className="new-item-btn" onClick={handleNewItemClick}>+ Add New Item</button>
+                <div className="search-bar">
+                    <input
                         type="text"
-                        placeholder="Search by name or category..."
-                        className="search-bar"
+                        placeholder="Search menu items..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    <button onClick={handleNewItemClick}>+ Add New Item</button>
                 </div>
             </div>
-            {error && <p className="error-message">{error}</p>}
 
+            {/* --- Edit/Add Item Form Modal --- */}
             {editingItem && (
-                <div className="edit-modal">
-                    <form onSubmit={handleSubmit} className="edit-form">
-                        <h3>{editingItem._id ? 'Edit' : 'Add'} Menu Item</h3>
-                        <div className="form-group">
-                            <label>Name</label>
-                            <input type="text" name="name" value={editingItem.name} onChange={handleFormChange} required />
-                        </div>
-                        <div className="form-group">
-                            <label>Price (₹)</label>
-                            <input type="number" name="price" value={editingItem.price} onChange={handleFormChange} required />
-                        </div>
-                        <div className="form-group">
-                            <label>Category</label>
-                            <input type="text" name="category" value={editingItem.category} onChange={handleFormChange} required />
-                        </div>
-                         <div className="form-group">
-                            <label>Description</label>
-                            <textarea name="description" value={editingItem.attributes?.description || ''} onChange={handleFormChange}></textarea>
-                        </div>
-                        <div className="form-group">
-                            <label>Image</label>
-                            <input type="file" onChange={handleFileChange} />
-                        </div>
-                        {/* --- Availability Checkbox in Form --- */}
-                        <div className="form-group-checkbox">
-                             <input 
-                                type="checkbox"
-                                id="isAvailable"
-                                name="isAvailable"
-                                checked={editingItem.isAvailable}
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h3>{editingItem._id ? 'Edit Item' : 'Add New Item'}</h3>
+                        <form onSubmit={handleSaveItem}>
+                            <input
+                                type="text"
+                                name="name"
+                                value={editingItem.name}
                                 onChange={handleFormChange}
-                             />
-                             <label htmlFor="isAvailable">Show this item to customers on the QR Menu</label>
-                        </div>
-                        <div className="form-actions">
-                            <button type="button" onClick={handleCancel}>Cancel</button>
-                            <button type="submit">Save Changes</button>
-                        </div>
-                    </form>
+                                placeholder="Item Name"
+                                required
+                            />
+                            <input
+                                type="number"
+                                name="price"
+                                value={editingItem.price}
+                                onChange={handleFormChange}
+                                placeholder="Price"
+                                required
+                            />
+                            <input
+                                type="text"
+                                name="category"
+                                value={editingItem.category}
+                                onChange={handleFormChange}
+                                placeholder="Category"
+                                required
+                            />
+                            <textarea
+                                name="attributes.description"
+                                value={editingItem.attributes?.description || ''}
+                                onChange={handleFormChange}
+                                placeholder="Description (optional)"
+                            />
+                            <input
+                                type="file"
+                                name="image"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                            />
+                            <div className="form-actions">
+                                <button type="submit" className="save-btn">Save</button>
+                                <button type="button" className="cancel-btn" onClick={() => setEditingItem(null)}>Cancel</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
 
-            <div className="menu-items-grid">
+            <div className="menu-grid">
                 {filteredMenuItems.map(item => (
-                    <div key={item._id} className={`menu-card ${!item.isAvailable ? 'item-hidden' : ''}`}>
-                        <img src={item.imageUrl ? `http://localhost:5000${item.imageUrl}` : 'https://via.placeholder.com/150'} alt={item.name} className="menu-card-img" />
+                    <div key={item._id} className="menu-card">
+                        {/* ✅ FIX: Prepend the backend URL to the image path */}
+                        <img src={`http://localhost:5000${item.image}` || 'https://via.placeholder.com/150'} alt={item.name} className="menu-card-img" />
                         <div className="menu-card-body">
                             <h4 className="menu-card-title">{item.name}</h4>
                             <p className="menu-card-price">₹{item.price}</p>
@@ -208,9 +213,9 @@ export default function MenuManagement() {
                         {/* --- Availability Toggle on Card --- */}
                         <div className="availability-toggle">
                             <label className="switch">
-                                <input 
-                                    type="checkbox" 
-                                    checked={item.isAvailable} 
+                                <input
+                                    type="checkbox"
+                                    checked={item.isAvailable}
                                     onChange={() => handleToggleAvailability(item)}
                                 />
                                 <span className="slider round"></span>

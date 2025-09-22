@@ -1,15 +1,19 @@
-// src/components/tableManagement.js
 import React, { useState, useEffect, useCallback } from 'react';
 import API from '../api';
 import './Tablemanagement.css';
 import QRCodeGenerator from './QRCodeGenerator';
 
+// Pass the 'user' prop into this component from restaurant.js
 export default function TableManagement({ user }) {
     const [tables, setTables] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    
-    const [isQrVisible, setIsQrVisible] = useState(false);
+
+    const [isMainQrVisible, setIsMainQrVisible] = useState(false);
+    const [isTableQrVisible, setIsTableQrVisible] = useState(false);
+    const [qrCodeURL, setQrCodeURL] = useState('');
+    const [selectedTable, setSelectedTable] = useState(null);
+
     const [newTableName, setNewTableName] = useState('');
     const [newTableCapacity, setNewTableCapacity] = useState(4);
 
@@ -36,76 +40,104 @@ export default function TableManagement({ user }) {
             return;
         }
         try {
-            const newTable = {
-                name: newTableName,
-                capacity: newTableCapacity,
-                restaurant: user.restaurantId._id
-            };
-            await API.post('/api/tables', newTable);
+            await API.post('/api/tables', { name: newTableName, capacity: newTableCapacity, isTemporary: false });
             setNewTableName('');
             setNewTableCapacity(4);
             fetchTables();
-            setError('');
         } catch (err) {
-            setError(err.response?.data?.error || 'Failed to add table.');
+            setError('Failed to add table.');
         }
     };
 
-    const handleDeleteTable = useCallback(async (tableId) => {
-        try {
-            await API.delete(`/api/tables/${tableId}`);
-            fetchTables();
-        } catch (err) {
-            setError('Failed to delete table.');
+    const handleDeleteTable = async (tableId) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this table?");
+        if (confirmDelete) {
+            try {
+                await API.delete(`/api/tables/${tableId}`);
+                fetchTables();
+            } catch (err) {
+                setError('Failed to delete table.');
+            }
         }
-    }, [fetchTables]);
-
-    const handleGenerateQr = (table) => {
-        setTables(prevTables => prevTables.map(t =>
-            t._id === table._id ? { ...t, showQr: !t.showQr } : t
-        ));
     };
+
+    // --- FIX: Access restaurantId directly from the user object ---
+    const handleShowTableQrCode = (table) => {
+        if (!user || !user.restaurantId) {
+            setError('Restaurant ID not found. Cannot generate QR code.');
+            return;
+        }
+        // URL for a specific table order
+        const qrUrl = `${window.location.origin}/customer/menu?shopId=${user.restaurantId}&tableId=${table._id}`;
+        setQrCodeURL(qrUrl);
+        setSelectedTable(table);
+        setIsTableQrVisible(true);
+    };
+
+    // --- FIX: Access restaurantId directly from the user object ---
+    const handleShowMainQrCode = () => {
+        if (!user || !user.restaurantId) {
+            setError('Restaurant ID not found. Cannot generate QR code.');
+            return;
+        }
+        // URL for the general restaurant menu
+        const qrUrl = `${window.location.origin}/customer/menu?shopId=${user.restaurantId}`;
+        setQrCodeURL(qrUrl);
+        setIsMainQrVisible(true);
+    };
+
+    // --- Function to hide all QR codes ---
+    const handleClearQrCode = () => {
+        setIsMainQrVisible(false);
+        setIsTableQrVisible(false);
+        setQrCodeURL('');
+        setSelectedTable(null);
+    };
+
+    if (isLoading) {
+        return <div className="loading-container">Loading Table Management...</div>;
+    }
 
     return (
         <div className="table-management-container">
-            <header className="page-header">
-                <h2>Table Management</h2>
-            </header>
-            
-            <div className="qr-generator-section">
-                <h3>QR Code Generation</h3>
-                <p>Generate unique QR codes for each table to enable mobile ordering.</p>
-                {tables.map(table => {
-                    // Update the QR code URL to correctly link to the public menu route
-                    const qrCodeURL = `https://komsyte-restro-frontend.onrender.com/menu?shopId=${user.restaurantId._id}&tableId=${table._id}`;
-                    return (
-                        <div key={table._id} className="qr-gen-card">
-                            <span>{table.name}</span>
-                            <button onClick={() => handleGenerateQr(table)}>
-                                {table.showQr ? 'Hide QR Code' : 'Generate QR Code'}
-                            </button>
-                            {table.showQr && (
-                                <>
-                                    <QRCodeGenerator table={table} qrCodeURL={qrCodeURL} />
-                                    <p style={{ marginTop: '15px' }}>Or share this link:</p>
-                                    <a href={qrCodeURL} target="_blank" rel="noopener noreferrer">
-                                        {qrCodeURL}
-                                    </a>
-                                </>
-                            )}
+            <h2 className="section-title">Table & QR Code Management</h2>
+            {error && <p className="error-message">{error}</p>}
+
+            {(isMainQrVisible || isTableQrVisible) && (
+                <div className="qr-popup-overlay">
+                    <div className="qr-popup-content">
+                        <h3>QR Code for {isMainQrVisible ? 'Main Menu' : selectedTable?.name}</h3>
+                        <p>Scan this code to place an order.</p>
+                        <QRCodeGenerator
+                            table={selectedTable || { name: 'Restaurant Menu' }}
+                            qrCodeURL={qrCodeURL}
+                        />
+                        {/* --- NEW: Display the clickable link below the QR code --- */}
+                        <div className="qr-link-display">
+                            <p><strong>QR Code Link:</strong> <a href={qrCodeURL} target="_blank" rel="noopener noreferrer">{qrCodeURL}</a></p>
                         </div>
-                    );
-                })}
+                        <button className="close-btn" onClick={handleClearQrCode}>Close</button>
+                    </div>
+                </div>
+            )}
+
+            <div className="qr-code-generation-section">
+                <h3>Generate Main Menu QR Code</h3>
+                <p>This QR code links to your public menu page for all customers.</p>
+                <button className="generate-qr-btn" onClick={handleShowMainQrCode}>
+                    Generate Main Menu QR Code
+                </button>
             </div>
-            
-            <div className="add-table-form-container">
-                <h3>Add a New Table</h3>
-                <form onSubmit={handleAddTable} className="add-table-form">
+
+            <div className="table-management-form">
+                <h3>Add New Table</h3>
+                <form className="add-table-form" onSubmit={handleAddTable}>
                     <input
                         type="text"
                         placeholder="Table Name (e.g., T1, Rooftop 5)"
                         value={newTableName}
                         onChange={(e) => setNewTableName(e.target.value)}
+                        required
                     />
                     <input
                         type="number"
@@ -113,10 +145,10 @@ export default function TableManagement({ user }) {
                         value={newTableCapacity}
                         onChange={(e) => setNewTableCapacity(e.target.value)}
                         min="1"
+                        required
                     />
                     <button type="submit">Add Table</button>
                 </form>
-                {error && <p className="error-message">{error}</p>}
             </div>
 
             <div className="table-list-container">
@@ -128,7 +160,10 @@ export default function TableManagement({ user }) {
                                 <span className="table-name">{table.name}</span>
                                 <span className="table-capacity">Capacity: {table.capacity}</span>
                             </div>
-                             <button className="delete-btn" onClick={() => handleDeleteTable(table._id)}>Delete</button>
+                            <div className="table-actions">
+                                <button className="qr-btn" onClick={() => handleShowTableQrCode(table)}>Generate QR</button>
+                                <button className="delete-btn" onClick={() => handleDeleteTable(table._id)}>Delete</button>
+                            </div>
                         </div>
                     ))}
                 </div>

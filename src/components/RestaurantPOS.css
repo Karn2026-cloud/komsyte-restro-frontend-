@@ -1,177 +1,279 @@
+/* * Professional & Mobile-First Design
+* This CSS uses Flexbox and Grid to ensure a perfect fit on any mobile screen.
+*/
+
+/* --- Base Variables & Global Styles --- */
 :root {
-    --pos-bg: #f1f5f9;
-    --panel-bg: #ffffff;
-    --border-color: #e2e8f0;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --primary-accent: #3b82f6;
-    --secondary-accent: #10b981;
-    --danger-accent: #ef4444;
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --border-radius: 12px;
+    --primary-color: #3b82f6; /* A friendly, professional blue */
+    --secondary-color: #10b981; /* A vibrant green for success */
+    --accent-color: #ef4444; /* A clear red for warnings/removals */
+    --background-color: #f3f4f6; /* A soft, light grey for the overall background */
+    --panel-color: #ffffff; /* Clean white for content panels */
+    --text-color: #1f2937; /* Dark charcoal for high readability */
+    --border-color: #e5e7eb;
+    --shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-.pos-container {
-    display: grid;
-    grid-template-columns: 1fr 400px; /* Main content and right sidebar */
-    height: calc(100vh - var(--header-height) - 50px); /* Adjust based on your layout's header/padding */
-    gap: 25px;
-    overflow: hidden;
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- Panels --- */
-.pos-panel {
-    background-color: var(--panel-bg);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
+.pos-layout {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    min-height: 100vh;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    overflow-x: hidden; /* Prevents all horizontal scrolling */
 }
 
-.pos-panel-header {
-    padding: 20px;
-    margin: 0;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 1.5rem;
+/* --- Panel Styles --- */
+.pos-sidebar,
+.pos-menu-panel,
+.order-details-panel {
+    padding: 1rem; /* Use rem for consistent scaling */
+    margin: 0.5rem;
+    background-color: var(--panel-color);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow);
+}
+
+h2, h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
     font-weight: 600;
-    color: var(--text-primary);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
-.pos-panel-content {
-    padding: 25px;
-    overflow-y: auto;
-}
-
-/* --- Left Panel: Tables & Menu --- */
-.pos-main-controls {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
-    padding: 0 25px;
-    padding-top: 25px;
-}
-
-.pos-main-controls button {
-    flex-grow: 1;
-    padding: 14px;
-    font-size: 1rem;
-    font-weight: 500;
-    border: 1px solid var(--border-color);
-    background-color: #f8fafc;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.pos-main-controls button:hover {
-    background-color: #f1f5f9;
-}
-.pos-main-controls button.active {
-    background-color: var(--primary-accent);
-    color: white;
-    border-color: var(--primary-accent);
-}
-
-.tables-grid {
+/* --- Responsive Grid for Lists --- */
+.table-list,
+.order-list,
+.menu-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 20px;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Auto-adjusts column count */
 }
 
-.table-box {
-    padding: 25px 10px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border: 2px solid var(--border-color);
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s ease;
-}
-.table-box.vacant { background-color: #f8fafc; }
-.table-box.occupied { border-color: var(--danger-accent); color: var(--danger-accent); background-color: #fef2f2; }
-.table-box:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
-.table-box.selected { background-color: var(--primary-accent); color: white; border-color: var(--primary-accent); }
-
-
-.menu-items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px;
-}
+/* --- Card & Interactive Styles --- */
+.table-card,
+.order-card,
 .menu-item-card {
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    text-align: center;
+    background-color: var(--background-color);
+    padding: 1rem;
+    border-radius: 0.5rem;
     cursor: pointer;
-    transition: all 0.2s ease;
-    overflow: hidden;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--border-color);
 }
-.menu-item-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
-.menu-item-card img {
-    width: 100%;
-    height: 100px;
-    object-fit: cover;
-}
-.menu-item-info {
-    padding: 12px;
-}
-.menu-item-info .name { font-weight: 600; color: var(--text-primary); }
-.menu-item-info .price { font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px;}
 
-/* --- Right Panel: Current Order --- */
-.order-header {
-    font-size: 1.2rem;
-    font-weight: 600;
-    padding: 0 25px 20px 25px;
-    color: var(--text-secondary);
+.table-card:hover,
+.order-card:hover,
+.menu-item-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
 }
+
+.table-card.active,
+.order-card.active {
+    background-color: var(--primary-color);
+    color: var(--panel-color);
+    border-color: var(--primary-color);
+    transform: scale(1.02);
+}
+
+.menu-item-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.menu-item-price {
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+/* --- Forms & Buttons --- */
+.menu-search-input,
+.manual-item-form input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+}
+
+.manual-item-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.pos-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.new-order-btn,
+.kot-btn,
+.bill-btn,
+.manual-item-form button {
+    padding: 0.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.new-order-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.manual-item-form button {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.kot-btn {
+    background-color: #facc15;
+    color: var(--text-color);
+}
+
+.bill-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.bill-btn:disabled {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+}
+
+/* --- Order Details Table --- */
 .order-items-table {
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: 1rem;
 }
-.order-items-table th, .order-items-table td {
-    padding: 14px 0;
+
+.order-items-table th,
+.order-items-table td {
+    padding: 0.75rem;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
 }
-.order-item-qty { text-align: center; }
-.qty-controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
-.qty-btn { background: #f1f5f9; border: 1px solid var(--border-color); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; line-height: 1; }
 
-.order-footer {
-    margin-top: auto;
-    padding: 25px;
-    background-color: #f8fafc;
-    border-top: 1px solid var(--border-color);
-}
-.order-total { display: flex; justify-content: space-between; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; }
-.order-actions button { width: 100%; padding: 16px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 10px; }
-.kot-btn { background: var(--primary-accent); color: white; }
-.bill-btn { background: var(--secondary-accent); color: white; }
-.order-actions button:disabled { background: #9ca3af; cursor: not-allowed; }
-
-/* --- Responsive Design --- */
-@media (max-width: 1200px) {
-    .pos-container { grid-template-columns: 1fr 350px; }
+.order-items-table th {
+    background-color: var(--background-color);
+    font-weight: 500;
 }
 
-@media (max-width: 992px) {
-    .pos-container {
-        grid-template-columns: 1fr;
-        height: auto;
+.qty-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.qty-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    text-align: center;
+    padding: 0;
+    cursor: pointer;
+}
+
+.remove-item-btn {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.order-total {
+    border-top: 2px solid var(--border-color);
+    padding-top: 1rem;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.order-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* --- Status Badges --- */
+.order-item-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px; /* A pill-shaped border-radius */
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+}
+
+.status-new { background-color: #facc15; color: var(--text-color); }
+.status-placed { background-color: #3b82f6; }
+.status-sent-to-kitchen { background-color: #10b981; }
+.status-in-progress { background-color: #f97316; }
+.status-ready { background-color: #22c55e; }
+.status-completed, .status-paid { background-color: #6b7280; }
+
+/* --- Desktop & Tablet Overrides --- */
+@media (min-width: 768px) {
+    .pos-layout {
+        flex-direction: row;
+        gap: 0.5rem;
+        padding: 0.5rem;
     }
-    .pos-panel {
-        height: auto;
-        min-height: 500px;
+
+    .pos-sidebar {
+        flex: 0 0 250px; /* Fixed width sidebar for tablets/desktops */
+        max-width: 25%;
     }
-}
-@media (max-width: 576px) {
-    .pos-main-controls { flex-direction: column; }
-    .tables-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-    .menu-items-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+
+    .pos-main {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+    
+    .order-details-panel {
+        flex: 2; /* Takes up more space */
+    }
+
+    .pos-menu-panel {
+        flex: 1; /* Takes up less space */
+    }
+
+    .manual-item-form {
+        flex-direction: row;
+    }
+    
+    .pos-actions,
+    .order-actions {
+        flex-direction: row;
+    }
 }

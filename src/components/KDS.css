@@ -1,41 +1,50 @@
-/* KDS.css */
-
-/* --- ✅ Global & Container Styling --- */
+/* --- Global Styles for KDS --- */
 .kds-container {
-    background-color: #1a1a1a;
-    color: #f0f0f0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Full screen height and dark background for a console-like feel */
     min-height: 100vh;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    display: flex;
+    flex-direction: column;
     padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* --- ✅ Header Styling --- */
-.kds-header {
+.kds-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #ecf0f1;
     text-align: center;
     margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #444;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
-.kds-header h1 {
-    margin: 0;
-    font-size: 2.5rem;
-    color: #ffffff;
-}
-
-/* --- ✅ Orders Grid Layout --- */
-.kds-orders-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-}
-
-/* --- ✅ Individual KOT Ticket Styling --- */
-.kot-ticket {
-    background-color: #2c2c2c;
-    border: 1px solid #555;
+.error-message, .no-orders-message {
+    color: #f1c40f;
+    background-color: rgba(241, 196, 15, 0.1);
+    border: 1px solid #f1c40f;
+    padding: 15px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    font-size: 1.1em;
+    margin: 20px;
+}
+
+/* --- KOT Grid and Cards --- */
+.kitchen-order-grid {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    align-content: flex-start;
+}
+
+.kot-card {
+    background-color: #34495e;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
@@ -44,91 +53,72 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #383838;
-    padding: 12px 15px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    border-bottom: 2px solid #555;
+    padding: 15px 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid #e67e22;
 }
 
 .kot-header h4 {
     margin: 0;
-    font-size: 1.4rem;
-    color: #ffffff;
+    font-size: 1.4em;
+    color: #ecf0f1;
     font-weight: 600;
 }
 
 .kot-header span {
-    font-size: 1rem;
-    color: #cccccc;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #bdc3c7;
 }
 
-/* --- ✅ Items List Styling --- */
+/* --- List of Items in KOT --- */
 .kot-items-list {
-    list-style-type: none;
-    padding: 0;
+    list-style: none;
+    padding: 15px 20px;
     margin: 0;
 }
 
 .kot-item {
     display: flex;
     align-items: center;
-    padding: 15px;
-    font-size: 1.2rem;
-    border-bottom: 1px solid #444;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-}
-
-.kot-items-list li:last-child {
-    border-bottom: none;
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 .kot-item:hover {
-    background-color: #4a4a4a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .item-qty {
     font-weight: bold;
+    color: #e67e22;
     margin-right: 15px;
-    color: #f0f0f0;
-    min-width: 30px;
+    font-size: 1.1em;
 }
 
 .item-name {
     flex-grow: 1;
+    font-weight: 500;
 }
 
-/* --- ✅ UPDATED Status Color Styling --- */
-.kot-item.status-sent-to-kitchen {
-    background-color: #5d3d0c; /* Amber/Orange for "New" */
-    color: #fff;
-    border-left: 5px solid #ff9800;
+/* --- Status-based Colors for Items --- */
+.status-sent-to-kitchen {
+    border: 1px solid #9b59b6;
 }
 
-.kot-item.status-preparing {
-    background-color: #6d5b1a; /* Darker yellow for "Preparing" */
-    color: #fff;
-    border-left: 5px solid #ffeb3b; /* Bright yellow border */
+.status-preparing {
+    border: 1px solid #f39c12;
 }
 
-.kot-item.status-ready {
-    background-color: #2e6d3f; /* Darker green for "Ready" */
-    color: #fff;
-    border-left: 5px solid #4CAF50; /* Bright green border */
+.status-ready {
+    border: 1px solid #2ecc71;
 }
 
-/* --- ✅ Helper & Message Styling --- */
-.no-orders-message, .kds-error {
-    text-align: center;
-    font-size: 1.5rem;
-    padding: 50px;
-    grid-column: 1 / -1;
-}
-
-.kds-error {
-    color: #e57373;
-    background-color: #3b1e1e;
-    border: 1px solid #e57373;
-    border-radius: 8px;
-}
+.status-sent-to-kitchen .item-qty { color: #9b59b6; }
+.status-preparing .item-qty { color: #f39c12; }
+.status-ready .item-qty { color: #2ecc71; }

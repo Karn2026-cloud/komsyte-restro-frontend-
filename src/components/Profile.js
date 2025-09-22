@@ -31,19 +31,18 @@ const AddEmployeeForm = ({ onEmployeeAdded, setIsLoading }) => {
         <form onSubmit={handleSubmit} className="profile-form">
             <h3>Add New Employee</h3>
             <div className="form-grid">
-                <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Employee Name" required />
-                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Employee Email" required />
-                <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Temporary Password" required />
-                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone Number" />
-                <input type="number" name="payRate" value={formData.payRate} onChange={handleChange} placeholder="Pay Rate (e.g., per hour)" />
+                <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Full Name" required />
+                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
+                <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Password" required />
+                <input type="text" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone" />
                 <select name="role" value={formData.role} onChange={handleChange} required>
                     <option value="Waiter">Waiter</option>
-                    <option value="Chef">Chef</option>
                     <option value="Manager">Manager</option>
-                    <option value="Cashier">Cashier</option>
+                    <option value="Owner">Owner</option>
                 </select>
+                <input type="number" name="payRate" value={formData.payRate} onChange={handleChange} placeholder="Pay Rate" />
             </div>
-            <button type="submit">Add Employee</button>
+            <button type="submit" className="submit-btn">Add Employee</button>
             {error && <p className="error-message">{error}</p>}
         </form>
     );
@@ -54,66 +53,81 @@ export default function Profile({ user }) {
     const [employees, setEmployees] = useState([]);
     const [performanceMap, setPerformanceMap] = useState(new Map());
     const [isLoading, setIsLoading] = useState(true);
-
-    const fetchProfileData = useCallback(async () => {
+    const [error, setError] = useState('');
+    
+    const fetchEmployeesAndPerformance = useCallback(async () => {
+        setIsLoading(true);
         try {
-            const [empResponse, perfResponse] = await Promise.all([
+            const [profileRes, employeesRes, dashboardRes] = await Promise.all([
+                API.get('/api/profile'),
                 API.get('/api/employees'),
                 API.get('/api/reports/dashboard')
             ]);
             
-            const fetchedEmployees = Array.isArray(empResponse.data) ? empResponse.data : [];
-            setEmployees(fetchedEmployees);
+            setEmployees(Array.isArray(employeesRes.data) ? employeesRes.data : []);
             
-            const perfMap = new Map();
-            if (perfResponse.data && Array.isArray(perfResponse.data.employeePerformance)) {
-                perfResponse.data.employeePerformance.forEach(p => {
-                    perfMap.set(p.workerId, p);
+            const employeePerformanceData = dashboardRes.data.employeePerformance;
+            const newPerformanceMap = new Map();
+            if (Array.isArray(employeePerformanceData)) {
+                employeePerformanceData.forEach(perf => {
+                    newPerformanceMap.set(perf.workerId.toString(), perf);
                 });
             }
-            setPerformanceMap(perfMap);
-
+            setPerformanceMap(newPerformanceMap);
+            setError('');
         } catch (err) {
-            console.error("Failed to fetch profile data", err);
+            setError('Failed to load employee data.');
+            console.error(err);
         } finally {
-            // ✅ This will now correctly turn off the loading indicator
             setIsLoading(false);
         }
     }, []);
 
     useEffect(() => {
-        fetchProfileData();
-    }, [fetchProfileData]);
+        fetchEmployeesAndPerformance();
+    }, [fetchEmployeesAndPerformance]);
 
     const handleDeleteEmployee = async (employeeId) => {
-        if (window.confirm('Are you sure you want to remove this employee?')) {
+        const confirmDelete = window.confirm("Are you sure you want to remove this employee?");
+        if (confirmDelete) {
             setIsLoading(true);
             try {
                 await API.delete(`/api/employees/${employeeId}`);
-                fetchProfileData(); // Re-fetch data after deleting
+                fetchEmployeesAndPerformance();
             } catch (err) {
-                alert('Failed to remove employee.');
+                setError(err.response?.data?.error || 'Failed to delete employee.');
                 setIsLoading(false);
             }
         }
     };
     
-    if (isLoading) return <div className="loading-container">Loading profiles...</div>;
-
     return (
-        <div className="profile-page-container">
-            <h2 className="page-title">Employee Management</h2>
-            <AddEmployeeForm onEmployeeAdded={fetchProfileData} setIsLoading={setIsLoading} />
-            
+        <div className="profile-container">
+            <h2>Your Profile</h2>
+            {isLoading && <p>Loading...</p>}
+            {error && <p className="error-message">{error}</p>}
+
+            <div className="profile-details-card">
+                <h3>{user?.name}</h3>
+                <p><strong>Role:</strong> {user?.role}</p>
+                <p><strong>Email:</strong> {user?.email}</p>
+                {user?.phone && <p><strong>Phone:</strong> {user.phone}</p>}
+                {user?.payRate && <p><strong>Pay Rate:</strong> ₹{user.payRate}</p>}
+            </div>
+
+            {(user?.role === 'Owner' || user?.role === 'Manager') && (
+                <AddEmployeeForm onEmployeeAdded={fetchEmployeesAndPerformance} setIsLoading={setIsLoading} />
+            )}
+
+            <h3>Employee Directory</h3>
             <div className="employee-list-container">
-                <h3>Current Staff ({employees.length})</h3>
                 <table className="employee-table">
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Role</th>
-                            <th>Total Sales</th>
+                            <th>Total Sales (₹)</th>
                             <th>Bills Handled</th>
                             {(user?.role === 'Owner' || user?.role === 'Manager') && <th>Actions</th>}
                         </tr>
@@ -123,13 +137,13 @@ export default function Profile({ user }) {
                             const empPerformance = performanceMap.get(emp._id.toString());
                             return (
                                 <tr key={emp._id}>
-                                    <td>{emp.name}</td>
-                                    <td>{emp.email}</td>
-                                    <td>{emp.role}</td>
-                                    <td>₹{empPerformance?.totalSales?.toFixed(2) || '0.00'}</td>
-                                    <td>{empPerformance?.billsCount || 0}</td>
+                                    <td data-label="Name">{emp.name}</td>
+                                    <td data-label="Email">{emp.email}</td>
+                                    <td data-label="Role">{emp.role}</td>
+                                    <td data-label="Total Sales (₹)">₹{empPerformance?.totalSales?.toFixed(2) || '0.00'}</td>
+                                    <td data-label="Bills Handled">{empPerformance?.billsCount || 0}</td>
                                     {(user?.role === 'Owner' || user?.role === 'Manager') && (
-                                        <td>
+                                        <td data-label="Actions">
                                             {emp.role !== 'Owner' && (
                                                 <button className="delete-btn" onClick={() => handleDeleteEmployee(emp._id)}>Remove</button>
                                             )}

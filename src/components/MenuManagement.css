@@ -1,129 +1,158 @@
-/* General container for the menu management page */
+/* --- Global & Layout Styles --- */
 .menu-management-container {
-    padding: 20px;
-    font-family: 'Poppins', sans-serif;
+    padding: 20px 40px;
+    background-color: #f8f9fa; /* Light gray background */
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #343a40; /* Dark text color */
 }
 
-/* Header section with title and controls */
-.menu-header {
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    text-align: center;
+    color: #2c3e50; /* Primary color from design system */
+}
+
+.controls-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 30px;
+    gap: 20px;
 }
 
-.menu-header h2 {
-    margin: 0;
-    font-size: 1.8rem;
-    color: #333;
-}
-
-/* Container for search bar and add button */
-.menu-controls {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-/* Style for the new search bar */
-.search-bar {
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    width: 250px;
-    font-size: 0.9rem;
+.new-item-btn {
+    padding: 12px 25px;
+    font-size: 1em;
+    font-weight: 600;
+    background-color: #28a745; /* A success green */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);
 }
 
-.search-bar:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+.new-item-btn:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(40, 167, 69, 0.3);
 }
 
-/* Grid for displaying menu item cards */
-.menu-items-grid {
+/* --- Menu Item Grid and Cards --- */
+.menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+    justify-content: center;
 }
 
-/* Individual menu item card styling */
 .menu-card {
-    background: #fff;
+    background-color: white;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
-    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
-    border: 1px solid #eee;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.menu-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 .menu-card-img {
     width: 100%;
-    height: 160px;
+    height: 180px;
     object-fit: cover;
+    display: block;
+    background-color: #e9ecef;
 }
 
 .menu-card-body {
     padding: 15px;
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
 }
 
 .menu-card-title {
+    font-size: 1.2em;
     margin: 0 0 5px 0;
-    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
 }
 
 .menu-card-price {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #007bff;
-    margin-bottom: 10px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #28a745;
+    margin: 0 0 10px 0;
 }
 
 .menu-card-desc {
-    font-size: 0.9rem;
-    color: #666;
+    font-size: 0.9em;
+    color: #7f8c8d;
     margin-bottom: 15px;
+    flex-grow: 1;
 }
 
 .menu-card-actions {
     display: flex;
+    justify-content: space-around;
     gap: 10px;
 }
 
-/* NEW: Styles for the availability toggle section */
+.edit-btn, .delete-btn {
+    padding: 10px;
+    flex: 1;
+    border-radius: 6px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.edit-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+
+/* --- Availability Toggle --- */
 .availability-toggle {
-    padding: 10px 15px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #eee;
     display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    color: #555;
+    gap: 10px;
+    padding: 10px;
+    border-top: 1px solid #e0e0e0;
+    background-color: #fcfcfc;
 }
 
-/* NEW: Style for cards of hidden items */
-.menu-card.item-hidden {
-    opacity: 0.6;
-    background-color: #fdfdfd;
-}
-
-.menu-card.item-hidden .menu-card-img {
-    filter: grayscale(80%);
-}
-
-/* NEW: CSS for the toggle switch */
 .switch {
     position: relative;
     display: inline-block;
-    width: 44px;
-    height: 24px;
+    width: 34px;
+    height: 18px;
 }
 
 .switch input {
@@ -140,99 +169,66 @@
     right: 0;
     bottom: 0;
     background-color: #ccc;
-    transition: .4s;
+    transition: 0.4s;
+    border-radius: 18px;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    bottom: 3px;
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
     background-color: white;
-    transition: .4s;
+    transition: 0.4s;
+    border-radius: 50%;
 }
 
 input:checked + .slider {
     background-color: #28a745;
 }
 
-input:focus + .slider {
-    box-shadow: 0 0 1px #28a745;
-}
-
 input:checked + .slider:before {
-    transform: translateX(20px);
+    transform: translateX(18px);
 }
 
-.slider.round {
-    border-radius: 34px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
-}
-
-/* Styles for the edit/add modal form */
-.edit-modal {
+/* --- Modal for Add/Edit Form --- */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
 }
 
-.edit-form {
-    background: white;
+.modal-content {
+    background-color: #ffffff;
     padding: 30px;
     border-radius: 12px;
     width: 90%;
     max-width: 500px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-out;
 }
 
-.edit-form h3 {
+.modal-content h3 {
+    text-align: center;
     margin-top: 0;
+    margin-bottom: 25px;
+    color: #2c3e50;
+    font-size: 1.8em;
 }
 
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-}
-
-.form-group input, .form-group textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* NEW: Checkbox style in the form */
-.form-group-checkbox {
+.modal-content form {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 20px 0;
-}
-
-.form-group-checkbox input {
-    width: auto;
-}
-
-.form-group-checkbox label {
-    margin: 0;
-    font-weight: normal;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .form-actions {
@@ -240,4 +236,58 @@ input:checked + .slider:before {
     justify-content: flex-end;
     gap: 10px;
     margin-top: 20px;
+}
+
+.form-actions button {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+}
+
+.submit-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.submit-btn:hover {
+    background-color: #218838;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+/* --- Responsive styles for search bar --- */
+.search-input {
+    flex-grow: 1;
+    max-width: 300px;
+}
+
+@media (max-width: 768px) {
+  .menu-management-container {
+    padding: 15px;
+  }
+  
+  .controls-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-input,
+  .new-item-btn {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* Make the grid a single column on smaller screens */
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,163 +1,237 @@
-/* Main container for the entire page */
-.table-management-page {
+.table-management-container {
     padding: 20px;
-    font-family: 'Poppins', sans-serif;
-    background-color: #f9fafb; /* Light background for the page */
-}
-
-/* Header section for the page title */
-.page-header {
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f0f0f0;
-}
-
-.page-header h2 {
-    margin: 0;
-    font-size: 1.8rem;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    max-width: 1000px;
+    margin: 20px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #333;
 }
 
-/* --- QR Code Section Styling --- */
-.shop-qr-container {
+.section-title {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-size: 2em;
+    font-weight: 600;
+}
+
+.error-message {
+    color: #e74c3c;
+    background-color: #fdeded;
+    border: 1px solid #e74c3c;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* --- QR Code Section --- */
+.qr-code-generation-section {
     background-color: #ffffff;
-    border-radius: 12px;
     padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     margin-bottom: 30px;
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e7e7e7;
 }
 
-.shop-qr-container h3 {
-    margin-top: 0;
+.qr-code-generation-section h3 {
+    color: #34495e;
     margin-bottom: 10px;
-    font-size: 1.5rem;
-    color: #0056b3;
+    font-size: 1.5em;
 }
 
-.shop-qr-container p {
+.qr-code-generation-section p {
+    color: #7f8c8d;
     margin-bottom: 20px;
-    color: #666;
+    font-style: italic;
 }
 
-.main-qr-code .download-qr-btn {
-    background-color: #007bff;
+.generate-qr-btn {
+    background-color: #2ecc71;
     color: white;
-    padding: 10px 20px;
+    padding: 12px 25px;
+    border: none;
     border-radius: 5px;
-    font-weight: 600;
+    font-size: 1em;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.main-qr-code .download-qr-btn:hover {
-    background-color: #0056b3;
+.generate-qr-btn:hover {
+    background-color: #27ae60;
+    transform: translateY(-2px);
 }
 
-/* --- Form and Table List Section Styling --- */
-.add-table-form-container,
-.table-list-container {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 25px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e7e7e7;
-}
-
-.add-table-form-container h3,
-.table-list-container h3 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-
-.add-table-form-container form {
+.qr-code-display {
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 15px;
 }
 
-.add-table-form-container input {
+.qr-link-display {
+    margin-top: 10px;
+}
+
+.qr-link-display p {
+    font-size: 0.9em;
+    color: #555;
+    word-break: break-all;
+}
+
+.qr-link-display a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.qr-link-display a:hover {
+    text-decoration: underline;
+}
+
+.clear-qr-btn {
+    background-color: #e74c3c;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.clear-qr-btn:hover {
+    background-color: #c0392b;
+}
+
+/* --- Add Table Form Section --- */
+.table-management-form {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.table-management-form h3 {
+    color: #34495e;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+.add-table-form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.add-table-form input {
     flex: 1;
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    font-size: 0.95rem;
+    font-size: 1em;
 }
 
-/* Grid for displaying the manual tables */
+.add-table-form button {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-table-form button:hover {
+    background-color: #2980b9;
+}
+
+/* --- Tables List Section --- */
+.table-list-container {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.table-list-container h3 {
+    color: #34495e;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
 .tables-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
 }
 
-/* Individual card for each manual table */
 .table-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f8f9fa;
-    padding: 20px;
+    background-color: #fcfcfc;
+    border: 1px solid #e0e0e0;
     border-radius: 8px;
-    border: 1px solid #dee2e6;
-    transition: box-shadow 0.2s ease-in-out;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .table-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .table-details {
     display: flex;
     flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
 }
 
 .table-name {
+    font-size: 1.2em;
     font-weight: 600;
-    font-size: 1.1rem;
-    color: #343a40;
+    color: #2c3e50;
 }
 
 .table-capacity {
-    font-size: 0.9rem;
-    color: #6c757d;
-}
-
-/* Shared button styles */
-button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s;
-}
-
-button[type="submit"] {
-    background-color: #28a745;
-    color: white;
-}
-
-button[type="submit"]:hover {
-    background-color: #218838;
+    font-size: 0.9em;
+    color: #7f8c8d;
 }
 
 .delete-btn {
-    background-color: #dc3545;
+    background-color: #c0392b;
     color: white;
-    font-size: 0.85rem;
-    padding: 6px 12px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .delete-btn:hover {
-    background-color: #c82333;
+    background-color: #e74c3c;
 }
 
-.error-message {
-    color: #dc3545;
-    margin-top: 15px;
+@media (max-width: 768px) {
+    .add-table-form {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .add-table-form input,
+    .add-table-form button {
+        width: 100%;
+    }
 }

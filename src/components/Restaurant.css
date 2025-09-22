@@ -1,687 +1,184 @@
-/* --- CSS Variables for Easy Theming --- */
-:root {
-    --primary-color: #4a90e2; /* A modern blue */
-    --secondary-color: #50e3c2; /* A vibrant teal/green for highlights */
-    --background-light: #f4f7f6;
-    --background-dark: #ffffff;
-    --text-primary: #333;
-    --text-secondary: #777;
-    --border-color: #e0e0e0;
-    --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --status-occupied: #f5a623; /* Orange */
-    --status-available: #7ed321; /* Green */
-    --status-new: #4a90e2; /* Blue */
-    --status-preparing: #f5a623; /* Orange */
-    --status-ready: #50e3c2; /* Teal */
+/* --- Restaurant.css --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* --- Overall Dashboard Layout --- */
+.restaurant-dashboard {
+  display: flex;
+  font-family: 'Poppins', sans-serif;
+  height: 100vh;
+  background-color: #f4f7f6;
+  color: #333;
 }
 
-/* --- General Styles --- */
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background-color: var(--background-light);
-    color: var(--text-primary);
-}
-
-button {
-    cursor: pointer;
-    border-radius: 5px;
-    border: 1px solid transparent;
-    padding: 10px 15px;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.2s ease-in-out;
-}
-
-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-hr {
-    border: none;
-    border-top: 1px solid var(--border-color);
-    margin: 20px 0;
-}
-
-/* --- Main Layout: Sidebar + Main Content --- */
-.home-container {
-    display: flex;
-    height: 100vh;
-}
-
+/* --- Sidebar Navigation --- */
 .sidebar {
-    width: 250px;
-    background-color: var(--background-dark);
-    padding: 20px;
-    box-shadow: var(--shadow-light);
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease;
-    z-index: 1000;
+  width: 250px;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease-in-out;
+  flex-shrink: 0;
 }
 
-.sidebar-logo img {
-    max-width: 150px;
-    margin: 0 auto 30px auto;
-    display: block;
+.sidebar.open {
+  transform: translateX(0);
 }
 
-.menu-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+.sidebar-header {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.menu-button {
-    display: block;
-    width: 100%;
-    padding: 12px 15px;
-    text-decoration: none;
-    color: var(--text-secondary);
-    font-weight: 500;
-    border-radius: 5px;
-    margin-bottom: 5px;
-    text-align: left;
+.sidebar-logo {
+  width: 80px;
+  height: auto;
+  border-radius: 50%;
+  margin-bottom: 10px;
 }
 
-.menu-button:hover {
-    background-color: var(--background-light);
-    color: var(--primary-color);
+.sidebar-title {
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: 600;
 }
 
-.menu-button.active {
-    background-color: var(--primary-color);
-    color: white;
-    font-weight: 600;
+.sidebar-nav {
+  flex-grow: 1;
+  padding-top: 20px;
 }
 
-/* --- Main Content Area --- */
-.main-content-wrapper {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
+.sidebar-nav li a {
+  display: block;
+  padding: 15px 25px;
+  color: #bdc3c7;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-nav li a:hover {
+  background-color: #34495e;
+  color: #ecf0f1;
+}
+
+.sidebar-nav li a.active {
+  background-color: #3498db;
+  color: white;
+  border-left: 5px solid #3498db;
+  padding-left: 20px;
+}
+
+/* --- Main Content Panel --- */
+.main-panel {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Header Bar --- */
 .main-header {
-    display: flex;
-    align-items: center;
-    padding: 15px 25px;
-    background-color: var(--background-dark);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    z-index: 500;
+  background-color: white;
+  padding: 20px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
 }
 
 .header-title {
-    margin: 0;
-    font-size: 1.5rem;
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #2c3e50;
 }
 
 .header-user-info {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-user-info span {
+  font-size: 1em;
+  color: #7f8c8d;
 }
 
 .logout-button-header {
-    background-color: #d9534f;
-    color: white;
-    border: none;
+  padding: 8px 15px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .logout-button-header:hover {
-    background-color: #c9302c;
+  background-color: #c0392b;
 }
 
-.mobile-menu-toggle {
-    display: none; /* Hidden on desktop */
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    color: var(--text-primary);
-    margin-right: 15px;
-}
-
+/* --- Main Content Area --- */
 .main-content {
-    flex-grow: 1;
-    padding: 25px;
-    overflow-y: auto;
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
 }
 
-
-/* --- Restaurant POS Container --- */
-.restaurant-pos-container-modal-based {
-    display: flex;
-    height: 100%;
-    gap: 20px;
+/* --- Loading State --- */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  font-size: 1.5rem;
+  color: #7f8c8d;
 }
 
-.order-panel-main {
-    flex-grow: 1;
-    background: var(--background-dark);
-    border-radius: 8px;
-    box-shadow: var(--shadow-light);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-}
-
-.order-panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 15px;
-}
-
-.order-panel-header h3 {
-    margin: 0;
-}
-
-.pos-main-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.pos-main-actions button {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-/* --- Modal for Tables & Menu --- */
-.pos-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-    animation: fadeIn 0.3s;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.pos-modal-content {
-    background: var(--background-light);
-    padding: 30px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 1000px;
-    height: 80vh;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
-
-.close-modal-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 1.8rem;
-    color: var(--text-secondary);
-}
-
-/* Panels inside Modal */
-.tables-panel, .menu-panel {
-    overflow-y: auto;
-}
-
-.tables-panel h3, .menu-panel h3 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
-}
-
-.table-grid, .menu-grid {
-    display: grid;
-    gap: 15px;
-}
-
-.table-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-}
-
-.menu-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-}
-
-
-.table-box {
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    background-color: var(--status-available);
-    color: white;
-    border: 2px solid darken(var(--status-available), 10%);
-}
-
-.table-box.occupied {
-    background-color: var(--status-occupied);
-    border: 2px solid darken(var(--status-occupied), 10%);
-}
-
-.table-box:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-light);
-}
-
-.delivery-section button {
-    background-color: var(--secondary-color);
-    color: white;
-    margin-bottom: 15px;
-}
-
-.delivery-box {
-    background: white;
-    padding: 15px;
-    border-radius: 5px;
-    border: 1px solid var(--border-color);
-    cursor: pointer;
-    margin-bottom: 10px;
-}
-
-/* --- Menu Item Styling --- */
-.menu-item-box {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    cursor: pointer;
-    overflow: hidden;
-    transition: all 0.2s ease;
-    display: flex;
-    flex-direction: column;
-}
-
-.menu-item-box:hover {
-    transform: scale(1.03);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.menu-item-img-small {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-}
-
-.menu-item-info {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    flex-grow: 1;
-}
-
-.menu-item-name {
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.menu-item-price {
-    font-weight: bold;
-    color: var(--primary-color);
-    align-self: flex-end;
-}
-
-
-/* --- Order Items List & Form --- */
-.customer-details-form {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.customer-details-form input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-}
-
-.order-items-list {
-    flex-grow: 1;
-    overflow-y: auto;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-}
-
-.order-items-list table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.order-items-list th, .order-items-list td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.order-items-list th {
-    background-color: var(--background-light);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-}
-
-.qty-adjust {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.qty-adjust button {
-    padding: 2px 8px;
-    font-size: 1rem;
-    background-color: #eee;
-    border: 1px solid #ccc;
-}
-
-.qty-col {
-    width: 120px;
-}
-
-/* Item Statuses */
-.status-New, .status-Preparing, .status-Ready, .status-Served {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.8rem;
-    color: white;
-}
-.status-New { background-color: var(--status-new); }
-.status-Preparing { background-color: var(--status-preparing); }
-.status-Ready { background-color: var(--status-ready); }
-.status-Served { background-color: #9b9b9b; }
-
-.empty-order-text {
-    text-align: center;
-    padding: 50px;
-    color: var(--text-secondary);
-}
-
-/* --- Order Actions --- */
-.order-actions {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-}
-
-.kot-btn {
-    background-color: var(--status-preparing);
-    color: white;
-    flex-grow: 1;
-}
-
-.bill-btn {
-    background-color: var(--secondary-color);
-    color: white;
-    flex-grow: 1;
-}
-
-.pos-message {
-    text-align: center;
-    margin-top: 15px;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: #e7f3fe;
-    color: #2c5282;
+/* --- Mobile Menu Toggle --- */
+.mobile-menu-toggle {
+  display: none; /* Hidden on desktop */
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: #2c3e50;
+  cursor: pointer;
 }
 
 /* --- Responsive Design --- */
 @media (max-width: 768px) {
-    .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        transform: translateX(-100%);
-        height: 100vh;
-    }
-
-    .sidebar.show {
-        transform: translateX(0);
-    }
-
-    .mobile-menu-toggle {
-        display: block;
-    }
-
-    .header-user-info span {
-        display: none; /* Hide welcome message on small screens */
-    }
-}/* --- ✅ NEW: Menu Item Selection & Badge Styles --- */
-/* This is needed for the badge to be positioned correctly */
-.menu-item-box {
-    position: relative; 
-    /* You can add other base styles for the menu item box here if needed */
-    cursor: pointer;
-    border: 2px solid transparent; /* Reserve space for the selected border */
-}
-
-/* Style for the menu item when it is selected */
-.menu-item-box.selected {
-    border: 2px solid #4CAF50; /* Green border to indicate selection */
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); /* Subtle glow effect */
-}
-
-/* Style for the quantity badge */
-.item-quantity-badge {
-    position: absolute;
-    top: -10px;        /* Position it slightly outside the top border */
-    right: -10px;       /* Position it slightly outside the right border */
-    background-color: #c9302c; /* A strong red color */
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
-    border-radius: 50%; /* Make it a perfect circle */
-    width: 26px;
-    height: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    border: 2px solid white;
-    z-index: 10; /* Ensure it's above other elements */
-}
-
-
-/* --- Main Layout Styles --- */
-.home-container {
-    display: flex;
-    height: 100vh;
-    background-color: #f4f7f6;
-}
-
-.sidebar {
-    width: 250px;
-    background-color: #fff;
-    border-right: 1px solid #e0e0e0;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease;
-}
-/* ... other existing sidebar, header, etc. styles ... */
-
-
-/* --- POS Modal Styles --- */
-.pos-modal-overlay {
+  .sidebar {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.pos-modal-content {
-    background: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 800px;
-    height: 80%;
-    overflow-y: auto;
-    position: relative;
-}
-
-.close-modal-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-/* --- POS Main Panel Styles --- */
-.restaurant-pos-container-modal-based {
-    display: flex;
     height: 100%;
-}
+    z-index: 100;
+    transform: translateX(-100%);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  }
 
-.order-panel-main {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
+  .sidebar.open {
+    transform: translateX(0);
+  }
 
-.order-panel-header {
-    display: flex;
+  .mobile-menu-toggle {
+    display: block;
+  }
+
+  .main-header {
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
+  }
 
-.pos-main-actions button {
-    margin-left: 10px;
-}
-
-.order-items-list table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.order-items-list th, .order-items-list td {
-    text-align: left;
-    padding: 12px 8px;
-    border-bottom: 1px solid #eee;
-}
-
-.qty-col {
-    text-align: center;
-}
-
-.qty-adjust {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.qty-adjust button {
-    width: 25px;
-    height: 25px;
-}
-.qty-adjust span {
-    padding: 0 10px;
-    font-weight: bold;
-}
-
-.order-actions {
-    margin-top: auto; /* Pushes to the bottom */
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-    display: flex;
-    gap: 15px;
-}
-
-.kot-btn, .bill-btn {
-    flex-grow: 1;
-    padding: 15px;
-    font-size: 1rem;
-}
-.kot-btn { background-color: #ff9800; }
-.bill-btn { background-color: #4CAF50; }
-
-
-/* --- Status Tag Styles --- */
-[class^="status-"] {
-    padding: 4px 8px;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 0.8em;
-    text-transform: capitalize;
-}
-.status-new { background-color: #9e9e9e; }
-.status-sent-to-kitchen { background-color: #ff9800; }
-.status-preparing { background-color: #2196F3; }
-.status-ready { background-color: #4CAF50; }
-
-
-/* --- Table & Menu Grid Styles (inside modal) --- */
-.table-grid, .delivery-grid, .menu-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 15px;
-    margin-top: 15px;
-}
-.menu-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-}
-
-.table-box, .delivery-box {
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-.table-box:hover, .delivery-box:hover {
-    transform: translateY(-3px);
-}
-.table-box.available { background-color: #e8f5e9; color: #388e3c; border: 1px solid #a5d6a7; }
-.table-box.occupied, .delivery-box.occupied { background-color: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
-
-.menu-item-box {
-    border: 2px solid #eee;
-    border-radius: 8px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-.menu-item-img-small {
-    width: 100%;
-    height: 100px;
-    object-fit: cover;
-}
-.menu-item-info {
-    padding: 10px;
-    text-align: center;
-}
-.menu-item-name {
-    font-weight: bold;
+  .header-title {
+    font-size: 1.5rem;
+  }
 }
