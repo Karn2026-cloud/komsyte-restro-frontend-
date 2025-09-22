@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create a central instance of axios for all API calls
 const API = axios.create({
-    baseURL: 'http://localhost:5000', // Your backend server URL
+    baseURL: 'https://komsyte-restro-backend.onrender.com', // Your backend server URL
 });
 
 // This special function (an interceptor) automatically adds the
@@ -14,5 +14,6 @@ API.interceptors.request.use((req) => {
     }
     return req;
 });
+
 
 export default API;
